@@ -83,16 +83,20 @@
   \setkomafont{captionlabel}{\sffamily\bfseries\small\color{NOIRLabBlue}}
   \setkomafont{partentry}{\sffamily\bfseries\color{NOIRLabBlue}}
   \setkomafont{pageheadfoot}{\sffamily\footnotesize\color{NOIRLabGrey}}
-  % The space above a section matches the space above a subsection. The class
-  % default gives section -3.5ex against the -3.25ex of the levels below it,
-  % which reads as an inconsistent step rather than a deliberate hierarchy.
-  % The space below a heading is left at the class default.
-  \RedeclareSectionCommand[beforeskip=-3.25ex plus -1ex minus -.2ex]{section}
+  % Sectioning below chapter level keeps the class spacing, including its
+  % stretch and shrink. That flexibility is what TeX uses to fill a page, and
+  % pinning it produced no visible gain: the difference it was meant to remove
+  % came from the chapter head, handled below.
   % Chapter elements exist in scrreprt and scrbook but not in scrartcl.
   \ifcsname chapter\endcsname
     \setkomafont{chapter}{\sffamily\bfseries\color{NOIRLabBlue}\fontsize{18pt}{22pt}\selectfont}
     \setkomafont{chapterentry}{\sffamily\bfseries\color{NOIRLabDarkGrey}}
     \setkomafont{chapterentrypagenumber}{\sffamily\bfseries\color{NOIRLabBlue}}
+    % A chapter title starts level with a section title that falls at the top of
+    % a page. The class default drops it about 60pt down the page instead.
+    % Chapter type is larger than section type, so its first line sits slightly
+    % lower for the same start; the small negative skip cancels that remainder.
+    \renewcommand*{\chapterheadstartvskip}{\vspace*{-4.87pt}}
   \fi
 \fi
 
