@@ -121,6 +121,14 @@
   noirlab data flow/.style={draw=NOIRLabGrey,thick,-{Latex[length=2mm]}}
 }
 
+% Centres a head element on the running-head axis, so that elements of
+% differing size sit level rather than on a shared baseline. Lifting by
+% (depth - height)/2 puts the box's own midpoint on the baseline; halving the
+% height alone would leave each box offset by half its own depth.
+\newcommand{\NOIRLabHeadCentred}[1]{%
+  \raisebox{\dimexpr0.5\depth-0.5\height\relax}{#1}%
+}
+
 \newcommand{\NOIRLabHeaderMark}{%
   \IfFileExists{\NOIRLabPackageDirectory noirlab-assets/noirlab_logo.pdf}
     {\includegraphics[height=8mm]{\NOIRLabPackageDirectory noirlab-assets/noirlab_logo.pdf}}
@@ -193,8 +201,20 @@
   % KOMA puts chapter openings and the contents page on plain. The starred foot
   % commands refill both, so those pages keep their page number. The head is
   % deliberately left to scrheadings only, keeping opening pages uncluttered.
-  \ihead{\NOIRLabHeaderMark\quad\NOIRLabDocumentShortTitle}
-  \ohead{\scriptsize Version \NOIRLabVersion{} \textbullet{} \NOIRLabDistribution}
+  %
+  % The whole running head is one full-width box, so every element shares a
+  % single baseline. Split across \ihead and \ohead they would sit in separate
+  % boxes with independent baselines, and the logo, being far taller than the
+  % text, would drive the inner one down. Each element is then centred on that
+  % shared baseline, so items of differing height finish level.
+  \chead{%
+    \hbox to\textwidth{%
+      \NOIRLabHeadCentred{\NOIRLabHeaderMark}\quad
+      \NOIRLabHeadCentred{\NOIRLabDocumentShortTitle}%
+      \hfil
+      \NOIRLabHeadCentred{\scriptsize Version \NOIRLabVersion{} \textbullet{} \NOIRLabDistribution}%
+    }%
+  }
   \ifoot*{\scriptsize \NOIRLabFooterText}
   \cfoot*{\pagemark}
   \ofoot*{}
