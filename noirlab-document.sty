@@ -83,6 +83,11 @@
   \setkomafont{captionlabel}{\sffamily\bfseries\small\color{NOIRLabBlue}}
   \setkomafont{partentry}{\sffamily\bfseries\color{NOIRLabBlue}}
   \setkomafont{pageheadfoot}{\sffamily\footnotesize\color{NOIRLabGrey}}
+  % The space above a section matches the space above a subsection. The class
+  % default gives section -3.5ex against the -3.25ex of the levels below it,
+  % which reads as an inconsistent step rather than a deliberate hierarchy.
+  % The space below a heading is left at the class default.
+  \RedeclareSectionCommand[beforeskip=-3.25ex plus -1ex minus -.2ex]{section}
   % Chapter elements exist in scrreprt and scrbook but not in scrartcl.
   \ifcsname chapter\endcsname
     \setkomafont{chapter}{\sffamily\bfseries\color{NOIRLabBlue}\fontsize{18pt}{22pt}\selectfont}
