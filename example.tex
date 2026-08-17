@@ -1,0 +1,43 @@
+\documentclass{scrreprt}
+
+\input{metadata-example.tex}
+\usepackage{noirlab-document}
+
+\hypersetup{
+  pdftitle={\NOIRLabDocumentTitle},
+  pdfauthor={\NOIRLabAuthors}
+}
+
+\ConfigureNOIRLabPageStyle
+
+\begin{document}
+
+\MakeNOIRLabTitlePage
+
+\chapter{Example Chapter}
+
+This minimal document demonstrates the reusable NOIRLab cover, typography,
+paragraph spacing, headings, tables, figures, contents styling, header, and
+footer. Replace this text and the values in \texttt{metadata-example.tex} when
+starting a new document.
+
+\section{Example Section}
+
+The reusable package contains presentation only. Project-specific document
+structure, technical content, citations, and release checks remain with the
+document that uses it.
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabularx}{0.72\textwidth}{@{}>{\bfseries}p{0.28\textwidth}X@{}}
+    \toprule
+    Element & Example value \\
+    \midrule
+    Typography & Source Sans Pro, 11 pt body text \\
+    Presentation & NOIRLab table and caption conventions \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Example of the table presentation supplied by the package.}
+\end{table}
+
+\end{document}

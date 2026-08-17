@@ -1,0 +1,16 @@
+/build/
+
+# LaTeX output from building example.tex in place
+*.aux
+*.bcf
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+example.pdf
+
+# macOS
+.DS_Store

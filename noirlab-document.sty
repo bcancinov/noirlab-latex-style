@@ -1,0 +1,261 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{noirlab-document}[2026/08/17 v0.2 Reusable NOIRLab document presentation]
+
+% The package has two supported hosts. A KOMA-Script class (scrreprt, scrbook,
+% scrartcl) receives the complete style. The standalone class receives the
+% colors and TikZ vocabulary only, which is what the figure sources need.
+% Any other class silently loses the heading, caption, and contents styling,
+% so it is reported rather than left to be discovered in the PDF.
+\@ifundefined{KOMAClassName}{%
+  \@ifclassloaded{standalone}{}{%
+    \PackageWarningNoLine{noirlab-document}{%
+      No KOMA-Script class detected.\MessageBreak
+      Heading, caption, contents, and page-mark styling are\MessageBreak
+      disabled, and the 11pt body size is not enforced.\MessageBreak
+      Use scrreprt, scrbook, or scrartcl for the complete style%
+    }%
+  }%
+}{}
+
+\RequirePackage{currfile}
+\edef\NOIRLabPackageDirectory{\currfiledir}
+
+\RequirePackage[letterpaper,margin=1in,headheight=42pt,headsep=14pt,footskip=32pt]{geometry}
+\RequirePackage[default]{sourcesanspro}
+\renewcommand{\familydefault}{\sfdefault}
+\RequirePackage{microtype}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{tabularx}
+\RequirePackage{array}
+\RequirePackage{longtable}
+\RequirePackage{booktabs}
+\RequirePackage{enumitem}
+\RequirePackage{etoolbox}
+\RequirePackage{scrlayer-scrpage}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
+\RequirePackage{hyperref}
+\RequirePackage{bookmark}
+
+\definecolor{NOIRLabBlue}{HTML}{0069A7}
+\definecolor{NOIRLabGrey}{HTML}{6E6E72}
+\definecolor{NOIRLabDarkGrey}{HTML}{3F424A}
+\definecolor{NOIRLabLightBlue}{HTML}{CFE2F3}
+\definecolor{NOIRLabRed}{HTML}{ED4C4C}
+\definecolor{NOIRLabPurple}{HTML}{A260CD}
+\definecolor{NOIRLabGold}{HTML}{FFB71B}
+\definecolor{NOIRLabCyan}{HTML}{009ADE}
+\definecolor{NOIRLabTeal}{HTML}{058B8C}
+\definecolor{NOIRLabAlertRed}{HTML}{A32626}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=NOIRLabBlue,
+  citecolor=NOIRLabBlue,
+  urlcolor=NOIRLabBlue,
+  pdfencoding=auto,
+  psdextra
+}
+
+% Complete reusable document typography and spacing.
+\linespread{1.07}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.68em plus 0.16em minus 0.10em}
+\setlength{\parfillskip}{0pt plus 1fil}
+\setlength{\textfloatsep}{18pt plus 4pt minus 3pt}
+\setlength{\floatsep}{14pt plus 3pt minus 2pt}
+\setlength{\intextsep}{14pt plus 3pt minus 2pt}
+\renewcommand{\arraystretch}{1.18}
+\setlist{nosep,leftmargin=*}
+\setcounter{tocdepth}{2}
+
+\ifcsname KOMAClassName\endcsname
+  % The KOMA fontsize option is used instead of \changefontsizes so that the
+  % body size resolves through scrsize11pt.clo. That keeps every derived size
+  % integral; \changefontsizes scales them proportionally instead, which asks
+  % for Computer Modern math at sizes it has no design for.
+  \KOMAoptions{fontsize=11pt,numbers=noenddot}
+  \setkomafont{disposition}{\sffamily\bfseries\color{NOIRLabBlue}}
+  \setkomafont{section}{\sffamily\bfseries\color{NOIRLabBlue}\fontsize{14pt}{17pt}\selectfont}
+  \setkomafont{subsection}{\sffamily\bfseries\color{NOIRLabGrey}\fontsize{11pt}{14pt}\selectfont}
+  \setkomafont{caption}{\sffamily\small\color{NOIRLabGrey}}
+  \setkomafont{captionlabel}{\sffamily\bfseries\small\color{NOIRLabBlue}}
+  \setkomafont{partentry}{\sffamily\bfseries\color{NOIRLabBlue}}
+  \setkomafont{pageheadfoot}{\sffamily\footnotesize\color{NOIRLabGrey}}
+  % Chapter elements exist in scrreprt and scrbook but not in scrartcl.
+  \ifcsname chapter\endcsname
+    \setkomafont{chapter}{\sffamily\bfseries\color{NOIRLabBlue}\fontsize{18pt}{22pt}\selectfont}
+    \setkomafont{chapterentry}{\sffamily\bfseries\color{NOIRLabDarkGrey}}
+    \setkomafont{chapterentrypagenumber}{\sffamily\bfseries\color{NOIRLabBlue}}
+  \fi
+\fi
+
+% Shared diagram vocabulary. Figures retain their content and geometry, while
+% their colors, typography, blocks, and connection semantics come from here.
+\tikzset{
+  noirlab block/.style={
+    draw=NOIRLabGrey,
+    rounded corners=1.5pt,
+    minimum height=9mm,
+    minimum width=28mm,
+    align=center,
+    fill=white,
+    font=\sffamily\small
+  },
+  noirlab main board/.style={noirlab block,draw=NOIRLabBlue,fill=NOIRLabLightBlue!40},
+  noirlab function board/.style={noirlab block,draw=NOIRLabGrey,fill=NOIRLabGrey!8},
+  noirlab backplane/.style={noirlab block,draw=NOIRLabBlue,very thick},
+  noirlab card/.style={draw=NOIRLabGrey,rounded corners=2pt,minimum width=31mm,minimum height=38mm,align=center,fill=NOIRLabGrey!6,font=\sffamily\small},
+  noirlab contact/.style={draw=NOIRLabGrey,fill=white,minimum width=17mm,minimum height=3mm,inner sep=0pt},
+  noirlab health/.style={noirlab block,minimum width=34mm,font=\sffamily\footnotesize},
+  noirlab band/.style={draw=NOIRLabGrey!55,rounded corners=2pt,fill=NOIRLabGrey!3,inner sep=4mm},
+  noirlab power flow/.style={draw=NOIRLabAlertRed,thick,-{Latex[length=2mm]}},
+  noirlab safety flow/.style={draw=black,very thick,dashed,-{Latex[length=2mm]}},
+  noirlab timing flow/.style={draw=NOIRLabBlue,thick,-{Latex[length=2mm]}},
+  noirlab data flow/.style={draw=NOIRLabGrey,thick,-{Latex[length=2mm]}}
+}
+
+\newcommand{\NOIRLabHeaderMark}{%
+  \IfFileExists{\NOIRLabPackageDirectory noirlab-assets/noirlab_logo.pdf}
+    {\includegraphics[height=8mm]{\NOIRLabPackageDirectory noirlab-assets/noirlab_logo.pdf}}
+    {\textbf{NSF NOIRLab}}%
+}
+
+\newcommand{\NOIRLabCoverMark}{%
+  \IfFileExists{\NOIRLabPackageDirectory noirlab-assets/noirlab_logo.pdf}
+    {\includegraphics[width=0.92\linewidth,height=34mm,keepaspectratio]{\NOIRLabPackageDirectory noirlab-assets/noirlab_logo.pdf}}
+    {\textbf{NSF NOIRLab}}%
+}
+
+\newcommand{\AURACoverMark}{%
+  \IfFileExists{\NOIRLabPackageDirectory noirlab-assets/aura_logo.pdf}
+    {\includegraphics[width=0.98\linewidth,height=20mm,keepaspectratio]{\NOIRLabPackageDirectory noirlab-assets/aura_logo.pdf}}
+    {\textbf{AURA}}%
+}
+
+\newcommand{\NOIRLabBrandBand}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[NOIRLabDarkGrey]
+      (current page.north west) rectangle ([yshift=-9mm]current page.north east);
+    \fill[NOIRLabBlue]
+      ([yshift=-9mm]current page.north west) rectangle ([yshift=-11mm]current page.north east);
+    \fill[NOIRLabRed]
+      ([xshift=-100mm,yshift=-9mm]current page.north east) --
+      ([xshift=-86mm,yshift=-9mm]current page.north east) --
+      ([xshift=-91mm,yshift=-11mm]current page.north east) --
+      ([xshift=-105mm,yshift=-11mm]current page.north east) -- cycle;
+    \fill[NOIRLabPurple]
+      ([xshift=-86mm,yshift=-9mm]current page.north east) --
+      ([xshift=-72mm,yshift=-9mm]current page.north east) --
+      ([xshift=-77mm,yshift=-11mm]current page.north east) --
+      ([xshift=-91mm,yshift=-11mm]current page.north east) -- cycle;
+    \fill[NOIRLabGold]
+      ([xshift=-72mm,yshift=-9mm]current page.north east) --
+      ([xshift=-58mm,yshift=-9mm]current page.north east) --
+      ([xshift=-63mm,yshift=-11mm]current page.north east) --
+      ([xshift=-77mm,yshift=-11mm]current page.north east) -- cycle;
+    \fill[NOIRLabCyan]
+      ([xshift=-58mm,yshift=-9mm]current page.north east) --
+      ([xshift=-44mm,yshift=-9mm]current page.north east) --
+      ([xshift=-49mm,yshift=-11mm]current page.north east) --
+      ([xshift=-63mm,yshift=-11mm]current page.north east) -- cycle;
+    \fill[NOIRLabTeal]
+      ([xshift=-44mm,yshift=-9mm]current page.north east) rectangle
+      ([yshift=-11mm]current page.north east);
+  \end{tikzpicture}%
+}
+
+\newcommand{\NOIRLabSemicircle}[1]{%
+  \tikz[baseline=0pt]{%
+    \fill[#1] (0,-0.10ex)
+      arc[start angle=-90,end angle=90,radius=0.62ex] -- cycle;
+  }%
+}
+
+\newcommand{\NOIRLabObservatoryList}{%
+  \scriptsize\color{NOIRLabGrey}\raggedleft
+  Cerro Tololo Inter-American Observatory\enspace\NOIRLabSemicircle{NOIRLabRed}\par
+  Community Science and Data Center\enspace\NOIRLabSemicircle{NOIRLabPurple}\par
+  Gemini Observatory\enspace\NOIRLabSemicircle{NOIRLabGold}\par
+  Kitt Peak National Observatory\enspace\NOIRLabSemicircle{NOIRLabCyan}\par
+  Vera C. Rubin Observatory\enspace\NOIRLabSemicircle{NOIRLabTeal}\par
+}
+
+\newcommand{\ConfigureNOIRLabPageStyle}{%
+  \clearpairofpagestyles
+  % \clearpairofpagestyles empties scrheadings and plain.scrheadings alike, and
+  % KOMA puts chapter openings and the contents page on plain. The starred foot
+  % commands refill both, so those pages keep their page number. The head is
+  % deliberately left to scrheadings only, keeping opening pages uncluttered.
+  \ihead{\NOIRLabHeaderMark\quad\NOIRLabDocumentShortTitle}
+  \ohead{\scriptsize Version \NOIRLabVersion{} \textbullet{} \NOIRLabDistribution}
+  \ifoot*{\scriptsize \NOIRLabFooterText}
+  \cfoot*{\pagemark}
+  \ofoot*{}
+  \KOMAoptions{headsepline=0.4pt}
+  \setkomafont{headsepline}{\color{NOIRLabGrey}}
+  \pagestyle{scrheadings}
+}
+
+\newcommand{\NOIRLabControlNotice}{%
+  \ifNOIRLabRelease
+    This document is \NOIRLabStatus. It is effective as of \NOIRLabEffectiveDate. Changes require the applicable NOIRLab document-control process.
+  \else
+    This is a development preview, not a controlled release. It may be replaced during technical and editorial review.
+  \fi
+}
+
+\newcommand{\MakeNOIRLabTitlePage}{%
+  \begin{titlepage}
+    \thispagestyle{empty}
+    \NOIRLabBrandBand
+    \vspace*{12mm}
+
+    \noindent
+    \begin{minipage}[t][34mm][c]{0.38\textwidth}
+      \raggedright
+      \NOIRLabCoverMark
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[t][34mm][c]{0.56\textwidth}
+      \NOIRLabObservatoryList
+    \end{minipage}
+
+    \vspace{25mm}
+
+    \begin{center}
+      {\color{NOIRLabBlue}\Huge\bfseries \NOIRLabDocumentTitle\par}
+      \vspace{8mm}
+      {\color{NOIRLabBlue}\LARGE \NOIRLabDocumentType\par}
+      \vspace{9mm}
+      {\large\bfseries Author: \NOIRLabAuthors\par}
+      \ifdefempty{\NOIRLabReviewers}{}{%
+        \vspace{2mm}{\normalsize Reviewers: \NOIRLabReviewers\par}%
+      }
+      \vspace{7mm}
+      {\color{NOIRLabGrey}
+        Version: \NOIRLabVersion\par
+        Generated: \NOIRLabGenerationDate\par
+        Distribution: \NOIRLabDistribution\par}
+    \end{center}
+
+    \vfill
+
+    \noindent
+    \begin{minipage}[b][20mm][c]{0.22\textwidth}
+      \raggedright
+      \AURACoverMark
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[b][20mm][c]{0.71\textwidth}
+      \raggedright
+      \footnotesize
+      \ifNOIRLabRelease
+        \NOIRLabControlNotice\par
+        \medskip
+      \fi
+      \NOIRLabTitlePageNote\par
+    \end{minipage}
+  \end{titlepage}%
+}
